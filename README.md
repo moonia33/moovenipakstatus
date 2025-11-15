@@ -1,6 +1,12 @@
 # moovenipakstatus
 
-Versija: 0.1.0
+ Versija: 0.1.1
+
+## Atsisiųsti
+
+[![Download ZIP](https://img.shields.io/badge/Download-moovenipakstatus.zip-2ea44f?style=for-the-badge)](https://github.com/moonia33/moovenipakstatus/releases/latest/download/moovenipakstatus.zip)
+
+Arba tiesioginė nuoroda: [Download moovenipakstatus.zip (latest release)](https://github.com/moonia33/moovenipakstatus/releases/latest/download/moovenipakstatus.zip)
 
 # Git repo:
 
