@@ -6,8 +6,6 @@ Versija: 0.1.0
 
 https://github.com/moonia33/moovenipakstatus.git
 
-# git user 
-moonia33 lengvos@gmail.com
 
 PrestaShop module that automatically updates order statuses based on Venipak (mijoravenipak) shipment tracking.
 
@@ -35,4 +33,17 @@ Example crontab entry:
 
 ```
 */30 * * * * /usr/bin/php /home/liviacorsetti/htdocs/liviacorsetti.lt/modules/moovenipakstatus/bin/cron.php >/dev/null 2>&1
+```
+
+## Atsisiuntimas (GitHub Releases)
+
+- Kiekvieno žymėjimo (tag `v*`) metu automatiškai sugeneruojamas ZIP: `moovenipakstatus.zip`.
+- Eikite į repo „Releases“ ir parsisiųskite naujausią ZIP.
+
+Žymos kūrimas ir stūmimas:
+
+```
+git tag v0.1.0 -m "v0.1.0"
+git push -u origin main
+git push --tags
 ```

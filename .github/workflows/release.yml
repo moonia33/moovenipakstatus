@@ -1,0 +1,43 @@
+name: gh-release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: {}
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare dist folder
+        run: |
+          set -e
+          mkdir -p dist/moovenipakstatus
+          rsync -a ./ dist/moovenipakstatus/ \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude 'dist/' \
+            --exclude 'build/' \
+            --exclude '*.zip'
+          cd dist
+          zip -r moovenipakstatus.zip moovenipakstatus
+
+      - name: Extract version
+        id: ver
+        run: |
+          set -e
+          V=$(grep -Po "\\$this->version\\s*=\\s*'\\K[^']+" moovenipakstatus.php || echo 0.0.0)
+          echo "version=$V" >> $GITHUB_OUTPUT
+
+      - name: Upload release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/moovenipakstatus.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
