@@ -1,0 +1,8 @@
+{
+  "name": "moonia/moovenipakstatus",
+  "description": "PrestaShop Venipak automatic order status module",
+  "type": "prestashop-module",
+  "license": "proprietary",
+  "require": {
+  }
+}
