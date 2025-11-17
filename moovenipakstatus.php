@@ -10,7 +10,7 @@ class Moovenipakstatus extends Module
     {
         $this->name = 'moovenipakstatus';
         $this->tab = 'shipping_logistics';
-        $this->version = '0.1.4';
+        $this->version = '0.1.5';
         $this->author = 'moonia';
         $this->need_instance = 0;
         $this->bootstrap = true;

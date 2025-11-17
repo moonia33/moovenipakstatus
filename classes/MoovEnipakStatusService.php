@@ -78,18 +78,22 @@ class MoovEnipakStatusService
                     continue;
                 }
 
-                $lines = preg_split('/\r\n|\r|\n/', trim($csv));
-                if (!$lines || count($lines) < 2) {
+                $handle = fopen('data://text/csv,' . $csv, 'r');
+                if ($handle === false) {
                     continue;
                 }
-
-                $dataLines = array_slice($lines, 1);
-                foreach ($dataLines as $line) {
-                    $cols = str_getcsv($line, ';');
-                    if (isset($cols[3]) && trim($cols[3]) !== '') {
-                        $lastStatus = trim($cols[3]);
+                $rowIndex = 0;
+                while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+                    $rowIndex++;
+                    if ($rowIndex === 1) {
+                        // header row; skip
+                        continue;
+                    }
+                    if (isset($data[3]) && $data[3] !== '' && strtolower($data[3]) !== 'status') {
+                        $lastStatus = trim($data[3]);
                     }
                 }
+                fclose($handle);
             }
 
             if ($lastStatus === null) {
