@@ -10,7 +10,7 @@ class Moovenipakstatus extends Module
     {
         $this->name = 'moovenipakstatus';
         $this->tab = 'shipping_logistics';
-        $this->version = '0.1.1';
+        $this->version = '0.1.4';
         $this->author = 'moonia';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -62,6 +62,7 @@ class Moovenipakstatus extends Module
 
         return Configuration::updateValue('MOOVENIPAK_AUTO_ENABLED', false)
             && Configuration::updateValue('MOOVENIPAK_AUTO_MAX_PER_RUN', 100)
+            && Configuration::updateValue('MOOVENIPAK_AUTO_SLEEP_SECONDS', 0)
             && Configuration::updateValue('MOOVENIPAK_AUTO_SCENARIOS', json_encode($defaultScenarios))
             && Configuration::updateValue('MOOVENIPAK_AUTO_TOKEN', Tools::passwdGen(32));
     }
@@ -70,6 +71,7 @@ class Moovenipakstatus extends Module
     {
         return Configuration::deleteByName('MOOVENIPAK_AUTO_ENABLED')
             && Configuration::deleteByName('MOOVENIPAK_AUTO_MAX_PER_RUN')
+            && Configuration::deleteByName('MOOVENIPAK_AUTO_SLEEP_SECONDS')
             && Configuration::deleteByName('MOOVENIPAK_AUTO_SCENARIOS')
             && Configuration::deleteByName('MOOVENIPAK_AUTO_TOKEN');
     }
@@ -83,6 +85,10 @@ class Moovenipakstatus extends Module
             $maxPerRun = (int) Tools::getValue('MOOVENIPAK_AUTO_MAX_PER_RUN');
             if ($maxPerRun <= 0) {
                 $maxPerRun = 100;
+            }
+            $sleepSeconds = (int) Tools::getValue('MOOVENIPAK_AUTO_SLEEP_SECONDS');
+            if ($sleepSeconds < 0) {
+                $sleepSeconds = 0;
             }
 
             $scenarios = [];
@@ -98,6 +104,7 @@ class Moovenipakstatus extends Module
 
             Configuration::updateValue('MOOVENIPAK_AUTO_ENABLED', $enabled);
             Configuration::updateValue('MOOVENIPAK_AUTO_MAX_PER_RUN', $maxPerRun);
+            Configuration::updateValue('MOOVENIPAK_AUTO_SLEEP_SECONDS', $sleepSeconds);
             Configuration::updateValue('MOOVENIPAK_AUTO_SCENARIOS', json_encode($scenarios));
 
             $output .= $this->displayConfirmation($this->l('Settings updated'));
@@ -190,6 +197,14 @@ class Moovenipakstatus extends Module
                         'class' => 'fixed-width-sm',
                         'suffix' => $this->l('orders'),
                     ],
+                    [
+                        'type' => 'text',
+                        'label' => $this->l('Delay between track and apply (seconds)'),
+                        'name' => 'MOOVENIPAK_AUTO_SLEEP_SECONDS',
+                        'class' => 'fixed-width-sm',
+                        'suffix' => 's',
+                        'desc' => $this->l('Optional wait time between tracking refresh and applying scenarios. Used by CLI when --sleep is not provided.'),
+                    ],
                 ],
                 'submit' => [
                     'title' => $this->l('Save'),
@@ -274,6 +289,7 @@ class Moovenipakstatus extends Module
         $helper->fields_value = [
             'MOOVENIPAK_AUTO_ENABLED' => (int) Configuration::get('MOOVENIPAK_AUTO_ENABLED'),
             'MOOVENIPAK_AUTO_MAX_PER_RUN' => (int) Configuration::get('MOOVENIPAK_AUTO_MAX_PER_RUN'),
+            'MOOVENIPAK_AUTO_SLEEP_SECONDS' => (int) Configuration::get('MOOVENIPAK_AUTO_SLEEP_SECONDS'),
         ];
 
         for ($i = 1; $i <= 3; $i++) {

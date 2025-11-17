@@ -39,7 +39,6 @@ class MoovEnipakStatusService
                                 LEFT JOIN " . _DB_PREFIX_ . "carrier c ON o.id_carrier = c.id_carrier
                                 WHERE mo.id_order IS NOT NULL
                                     AND mo.`labels_numbers` IS NOT NULL
-                                    AND mo.`manifest_id` IS NOT NULL
                                     AND (mo.`status` IS NULL OR LOWER(mo.`status`) != 'delivered')
                                     AND c.id_reference IN (" . $inRefs . ')
                                 ORDER BY mo.id_order ASC

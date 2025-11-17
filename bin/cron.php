@@ -42,6 +42,9 @@ require_once _PS_MODULE_DIR_ . 'moovenipakstatus/classes/MoovEnipakStatusService
 
 $force = (bool) cliOpt('force', false);
 $verbose = (bool) cliOpt('verbose', false);
+$trackOnly = (bool) cliOpt('track-only', false);
+$applyOnly = (bool) cliOpt('apply-only', false);
+$sleepArg = cliOpt('sleep');
 $enabled = (bool) Configuration::get('MOOVENIPAK_AUTO_ENABLED');
 if (!$enabled && !$force){
     fwrite(STDOUT, "moovenipakstatus: WARNING automation disabled, proceeding anyway (non-blocking). Use --force to suppress this warning.\n");
@@ -56,8 +59,19 @@ $start = microtime(true);
 $refreshed = 0;
 $updated = 0;
 try {
-    $refreshed = $service->refreshVenipakTracking($limit);
-    $updated   = $service->applyScenarios($limit);
+    if (!$applyOnly) {
+        $refreshed = $service->refreshVenipakTracking($limit);
+    }
+    if ($sleepArg === null && !$trackOnly && !$applyOnly) {
+        $sleepArg = (int) Configuration::get('MOOVENIPAK_AUTO_SLEEP_SECONDS');
+    }
+    if ($sleepArg && !$trackOnly && !$applyOnly) {
+        $sleep = (int)$sleepArg;
+        if ($sleep > 0) { usleep($sleep * 1000000); }
+    }
+    if (!$trackOnly) {
+        $updated   = $service->applyScenarios($limit);
+    }
 } catch (Throwable $e) {
     fwrite(STDERR, "ERROR: ".$e->getMessage()."\n");
     // For visibility also output trace top line
